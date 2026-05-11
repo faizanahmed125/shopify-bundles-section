@@ -1,0 +1,231 @@
+<section class="bundle-section-premium">
+  <div class="page-width">
+    <h2 class="bundle-main-title">Exclusive Coffee Bundles</h2>
+    <div class="bundle-container">
+      
+      {% assign bundle_handles = "mixed-collection-bundle,best-sellers-bundle,complete-collection-bundle" | split: "," %}
+
+      {% for handle in bundle_handles %}
+        {% assign current_collection = collections[handle] %}
+        
+        {% if current_collection != blank %}
+          {% assign first_product = current_collection.products.first %}
+
+          <div class="premium-bundle-card">
+            
+            <!-- PRIMARY BADGE -->
+            <div class="badge-wrapper">
+              {% if handle contains 'mixed' %}
+                <span class="premium-badge variety">Variety Pack</span>
+              {% elsif handle contains 'best-sellers' %}
+                <span class="premium-badge seller">Best Seller</span>
+              {% elsif handle contains 'complete' %}
+                <span class="premium-badge value">Best Value</span>
+              {% endif %}
+            </div>
+
+            <!-- DISCOUNT BADGE (10px Font) -->
+            <div class="discount-badge-wrapper">
+              {% if handle contains 'mixed' %}
+                <span class="discount-circle">Save 15%</span>
+              {% elsif handle contains 'best-sellers' %}
+                <span class="discount-circle">Save 20%</span>
+              {% elsif handle contains 'complete' %}
+                <span class="discount-circle">Save 25%</span>
+              {% endif %}
+            </div>
+
+            <!-- IMAGE LOGIC: Collection Image first, then Product Image fallback -->
+            <div class="bundle-img-area">
+              {% if current_collection.image %}
+                <img 
+                    src="{{ current_collection.image | image_url: width: 950 }}" 
+                    alt="{{ current_collection.title }}"
+                    width="950"
+                    height="{{ 908 | divided_by: current_collection.image.aspect_ratio | round }}"
+                    loading="lazy"
+                >
+                {% else %}
+                <img 
+                    src="{{ first_product.featured_image | image_url: width: 600 }}" 
+                    alt="{{ current_collection.title }}"
+                    width="600"
+                    height="{{ 600 | divided_by: first_product.featured_image.aspect_ratio | round }}"
+                    loading="lazy"
+                >
+                {% endif %}
+            </div>
+            
+            <div class="bundle-content-area">
+              <h3 class="bundle-title-serif">{{ current_collection.title }}</h3>
+              <p class="bundle-subtitle">{{ current_collection.description | strip_html | truncatewords: 12 }}</p>
+              
+              <div class="bundle-footer-wrap">
+                <div class="bundle-pricing">
+                  <span class="new-price">{{ first_product.price | money }}</span>
+                  {% if first_product.compare_at_price > first_product.price %}
+                    <span class="old-price">{{ first_product.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+                
+                <a href="{{ current_collection.url }}" class="bundle-cta-gold">View Bundle</a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  :root {
+    --brand-navy: #003865; 
+    --brand-gold: #c5a059;
+    --coffee-brown: #4B3621; 
+    --section-bg: #EFECCB;   
+  }
+
+  .bundle-section-premium { 
+    padding: 80px 0; 
+    background-color: var(--section-bg); 
+  }
+
+  .bundle-main-title { 
+    font-family: serif; 
+    text-align: center; 
+    color: var(--brand-navy); 
+    font-size: 36px; 
+    margin-bottom: 40px; 
+  }
+
+  .bundle-container { 
+    display: flex; 
+    gap: 80px; 
+    justify-content: center; 
+    max-width: 1300px; 
+    margin: 0 auto; 
+    align-items: stretch; 
+    padding: 0 20px; 
+  }
+
+  .premium-bundle-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 8px;
+    position: relative;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    margin-bottom: 0 !important; /* REMOVED MARGIN BOTTOM */
+  }
+
+  .premium-bundle-card:hover { transform: translateY(-5px); }
+
+  .bundle-content-area { display: flex; flex-direction: column; flex-grow: 1; }
+  .bundle-footer-wrap { margin-top: auto; }
+
+  .badge-wrapper { position: absolute; top: -10px; left: -10px; z-index: 5; }
+  .premium-badge {
+    display: inline-block;
+    padding: 6px 15px;
+    background: var(--brand-navy);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px var(--brand-gold);
+  }
+
+  .discount-badge-wrapper { position: absolute; top: -30px; right: 0px; z-index: 5; }
+  .discount-circle {
+    background: var(--coffee-brown); 
+    color: white;
+    width: 55px; 
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px; /* UPDATED FONT SIZE */
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .bundle-img-area img { 
+    width: 100%; 
+    height: 310px; 
+    margin-bottom: 20px; 
+    border-radius: 4px;
+    object-fit: cover; /* Ensures collection images fill the space nicely */
+  }
+  
+  .bundle-title-serif { 
+    font-family: serif; 
+    color: var(--brand-navy); 
+    font-size: 20px; /* UPDATED TITLE SIZE */
+    margin: 0 0 10px; 
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }
+
+  .bundle-subtitle { 
+    color: #666; 
+    font-size: 14px; 
+    margin-bottom: 12px; 
+    min-height: 45px;
+    line-height: 1.6;
+  }
+
+  .new-price { font-size: 20px; font-weight: bold; color: var(--brand-navy); }
+  .old-price { text-decoration: line-through; color: #999; margin-left: 8px; font-size: 14px; }
+
+  .bundle-cta-gold {
+    display: block;
+    text-align: center;
+    background: var(--brand-navy);
+    color: white;
+    padding: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 15px;
+  }
+
+  @media (max-width: 990px) {
+    .bundle-container { 
+      flex-direction: column; 
+      align-items: center;
+      gap: 30px;
+     }
+
+    .premium-bundle-card { 
+        width: 100%;
+        max-width: 400px; 
+        margin-bottom: 20px !important;
+        text_align: center;
+     }
+
+     .bundle-subtitle { 
+    text-align: center; /* Specifically centers the subtitle */
+    min-height: auto;   /* Allows height to adjust naturally on small screens */
+  }
+
+    .bundle-pricing {
+    display: flex;
+    justify-content: center; /* Centers the prices horizontally */
+    align-items: center;
+  }
+
+  .bundle-title-serif {
+    display: flex;
+    justify-content: center;
+  }
+
+  }
+</style>
